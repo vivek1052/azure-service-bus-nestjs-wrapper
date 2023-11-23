@@ -4,9 +4,14 @@ import {
 } from '@azure/service-bus';
 import { DynamicModule, Logger, Provider } from '@nestjs/common';
 import { DiscoveryModule } from '@nestjs/core';
-import { QUEUE_NAME_SEPARATOR } from 'src/constants';
+import {
+  MESSAGE_TYPE_PROPERTY_NAME,
+  QUEUE_NAME_SEPARATOR,
+} from 'src/constants';
 import { ModuleOptions } from 'src/interfaces/module-options.interface';
-import { AzureServiceBusExplorer } from 'src/libs/azure-service-bus.explorer';
+import { ServiceBusExplorer } from 'src/libs/service-bus.explorer';
+import { RegisterMessageReceiver } from 'src/providers/register-message-receiver';
+import { RegisterQueueReceiver } from 'src/providers/register-queue-receiver';
 
 export class AzureServiceBusModule {
   static forRoot(
@@ -37,8 +42,13 @@ export class AzureServiceBusModule {
           provide: QUEUE_NAME_SEPARATOR,
           useValue: options?.separator || '.',
         },
-        AzureServiceBusExplorer,
-        Logger,
+        {
+          provide: MESSAGE_TYPE_PROPERTY_NAME,
+          useValue: options?.messageTypePropertyName || 'messageType',
+        },
+        ServiceBusExplorer,
+        RegisterMessageReceiver,
+        RegisterQueueReceiver,
       ],
       exports: [],
     };

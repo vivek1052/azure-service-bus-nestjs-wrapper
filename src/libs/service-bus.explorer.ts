@@ -20,6 +20,7 @@ import {
 } from 'src/constants';
 import { ServiceBusQueueReceiver } from './service-bus-queue-receiver';
 import { RegisterQueueReceiver } from 'src/providers/register-queue-receiver';
+import { RegisterMessageReceiver } from 'src/providers/register-message-receiver';
 
 export interface QueueType {
   queueControllerName: string;
@@ -38,13 +39,15 @@ export interface MessageType {
 }
 
 @Injectable()
-export class AzureServiceBusExplorer implements OnModuleInit, OnModuleDestroy {
-  private readonly logger = new Logger(AzureServiceBusExplorer.name);
+export class ServiceBusExplorer implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(ServiceBusExplorer.name);
   constructor(
     private readonly serviceBusClient: ServiceBusClient,
     private readonly registerQueueReceiver: RegisterQueueReceiver,
+    private readonly registerMessageReceiver: RegisterMessageReceiver,
     private readonly discoveryService: DiscoveryService,
     private readonly metadataScanner: MetadataScanner,
+    private readonly reflector: Reflector,
   ) {}
   onModuleDestroy() {
     this.serviceBusClient.close();
@@ -57,7 +60,9 @@ export class AzureServiceBusExplorer implements OnModuleInit, OnModuleDestroy {
       const methodNames = this.metadataScanner.getAllMethodNames(
         queueController.instance,
       );
-
+      this.logger.log(
+        `Registering handler for queue controller ${queueController.metatype.name}`,
+      );
       for (const methodName of methodNames) {
         if (
           this.registerQueueReceiver.methodIsQueueHandler(
@@ -65,6 +70,14 @@ export class AzureServiceBusExplorer implements OnModuleInit, OnModuleDestroy {
           )
         ) {
           this.registerQueueReceiver.register(queueController, methodName);
+        }
+
+        if (
+          this.registerMessageReceiver.methodIsMessageHandler(
+            queueController.instance[methodName],
+          )
+        ) {
+          this.registerMessageReceiver.register(queueController, methodName);
         }
       }
     }

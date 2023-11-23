@@ -5,6 +5,7 @@ import {
 
 export interface ModuleOptions {
   separator?: string;
+  messageTypePropertyName: string;
   serviceBusClientOptions?: ServiceBusClientOptions;
   serviceBusAdministrationClientOptions?: ServiceBusAdministrationClientOptions;
 }

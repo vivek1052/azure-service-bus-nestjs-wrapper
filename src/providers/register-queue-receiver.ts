@@ -52,11 +52,14 @@ export class RegisterQueueReceiver {
     this.logger.log(`Queue receiver registered for queue ${fullQueueName}`);
   }
 
-  getQueueName(target: any): string {
+  private getQueueName(target: any): string {
     return this.reflector.get(QUEUE_NAME, target);
   }
 
-  getFullQueueName(queueControllerName: string, queueName: string): string {
+  private getFullQueueName(
+    queueControllerName: string,
+    queueName: string,
+  ): string {
     return queueControllerName
       ? queueControllerName + this.queueNameSeparator + queueName
       : queueName;
@@ -66,11 +69,11 @@ export class RegisterQueueReceiver {
     return this.getQueueName(target) ? true : false;
   }
 
-  getServiceBusReceiverOptions(target: any) {
+  private getServiceBusReceiverOptions(target: any) {
     return this.reflector.get(QUEUE_OPTIONS, target);
   }
 
-  async createServiceBusQueue(fullQueueName: string): Promise<void> {
+  private async createServiceBusQueue(fullQueueName: string): Promise<void> {
     if (
       !(await this.serviceBusAdministrationClient.queueExists(fullQueueName))
     ) {
