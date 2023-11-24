@@ -2,7 +2,7 @@ import {
   ServiceBusAdministrationClient,
   ServiceBusClient,
 } from '@azure/service-bus';
-import { DynamicModule, Logger, Provider } from '@nestjs/common';
+import { DynamicModule, Provider } from '@nestjs/common';
 import { DiscoveryModule } from '@nestjs/core';
 import {
   MESSAGE_TYPE_PROPERTY_NAME,
@@ -13,19 +13,19 @@ import { ServiceBusExplorer } from 'src/libs/service-bus.explorer';
 import { RegisterMessageReceiver } from 'src/providers/register-message-receiver';
 import { RegisterQueueReceiver } from 'src/providers/register-queue-receiver';
 
-export class AzureServiceBusModule {
+export class ServiceBusModule {
   static forRoot(
     connectionString: string,
     options?: ModuleOptions,
   ): DynamicModule {
-    const azureServiceBusClientProvider: Provider = {
+    const serviceBusClientProvider: Provider = {
       provide: ServiceBusClient,
       useValue: new ServiceBusClient(
         connectionString,
         options?.serviceBusClientOptions,
       ),
     };
-    const azureServiceBusAdministrationClientProvider: Provider = {
+    const serviceBusAdministrationClientProvider: Provider = {
       provide: ServiceBusAdministrationClient,
       useValue: new ServiceBusAdministrationClient(
         connectionString,
@@ -33,11 +33,11 @@ export class AzureServiceBusModule {
       ),
     };
     return {
-      module: AzureServiceBusModule,
+      module: ServiceBusModule,
       imports: [DiscoveryModule],
       providers: [
-        azureServiceBusClientProvider,
-        azureServiceBusAdministrationClientProvider,
+        serviceBusClientProvider,
+        serviceBusAdministrationClientProvider,
         {
           provide: QUEUE_NAME_SEPARATOR,
           useValue: options?.separator || '.',
