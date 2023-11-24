@@ -1,5 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
-import { MESSAGE_TYPE } from 'src/constants';
+import { MESSAGE_TYPE } from '../constants';
 
 /**
  * MessageType decorator will create a queue with the name of QueueController

@@ -1,7 +1,6 @@
 import {
   ServiceBusAdministrationClient,
   ServiceBusClient,
-  ServiceBusReceiver,
   ServiceBusReceiverOptions,
 } from '@azure/service-bus';
 import {
@@ -17,8 +16,8 @@ import {
   MESSAGE_TYPE_PROPERTY_NAME,
   QUEUE_CONTROLLER_NAME,
   QUEUE_CONTROLLER_OPTIONS,
-} from 'src/constants';
-import { ServiceBusMessageReceiver } from 'src/libs/service-bus-message-receiver';
+} from '../constants';
+import { ServiceBusMessageReceiver } from '../libs/service-bus-message-receiver';
 
 @Injectable()
 export class RegisterMessageReceiver {
@@ -76,7 +75,7 @@ export class RegisterMessageReceiver {
   }
 
   methodIsMessageHandler(target: any): boolean {
-    return this.getMessageTypeName(target) ? true : false;
+    return !!this.getMessageTypeName(target);
   }
 
   private getServiceBusReceiverOptions(target: any): ServiceBusReceiverOptions {

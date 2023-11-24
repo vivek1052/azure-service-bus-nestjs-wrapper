@@ -8,10 +8,10 @@ import {
   MESSAGE_TYPE_PROPERTY_NAME,
   QUEUE_NAME_SEPARATOR,
 } from 'src/constants';
-import { ModuleOptions } from 'src/interfaces/module-options.interface';
-import { ServiceBusExplorer } from 'src/libs/service-bus.explorer';
-import { RegisterMessageReceiver } from 'src/providers/register-message-receiver';
-import { RegisterQueueReceiver } from 'src/providers/register-queue-receiver';
+import { ModuleOptions } from '../interfaces/module-options.interface';
+import { ServiceBusExplorer } from '../libs/service-bus.explorer';
+import { RegisterMessageReceiver } from '../providers/register-message-receiver';
+import { RegisterQueueReceiver } from '../providers/register-queue-receiver';
 
 export class ServiceBusModule {
   static forRoot(

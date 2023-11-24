@@ -10,8 +10,8 @@ import {
   QUEUE_NAME,
   QUEUE_NAME_SEPARATOR,
   QUEUE_OPTIONS,
-} from 'src/constants';
-import { ServiceBusQueueReceiver } from 'src/libs/service-bus-queue-receiver';
+} from '../constants';
+import { ServiceBusQueueReceiver } from '../libs/service-bus-queue-receiver';
 
 @Injectable()
 export class RegisterQueueReceiver {
@@ -66,7 +66,7 @@ export class RegisterQueueReceiver {
   }
 
   methodIsQueueHandler(target: any): boolean {
-    return this.getQueueName(target) ? true : false;
+    return !!this.getQueueName(target);
   }
 
   private getServiceBusReceiverOptions(target: any) {

@@ -1,10 +1,5 @@
+import { ServiceBusClient, ServiceBusReceiver } from '@azure/service-bus';
 import {
-  ServiceBusAdministrationClient,
-  ServiceBusClient,
-  ServiceBusReceiver,
-} from '@azure/service-bus';
-import {
-  Inject,
   Injectable,
   Logger,
   OnModuleDestroy,
@@ -12,15 +7,9 @@ import {
 } from '@nestjs/common';
 import { DiscoveryService, MetadataScanner, Reflector } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
-import {
-  QUEUE_CONTROLLER_NAME,
-  QUEUE_NAME,
-  QUEUE_NAME_SEPARATOR,
-  QUEUE_OPTIONS,
-} from 'src/constants';
-import { ServiceBusQueueReceiver } from './service-bus-queue-receiver';
-import { RegisterQueueReceiver } from 'src/providers/register-queue-receiver';
-import { RegisterMessageReceiver } from 'src/providers/register-message-receiver';
+import { QUEUE_CONTROLLER_NAME } from '../constants';
+import { RegisterQueueReceiver } from '../providers/register-queue-receiver';
+import { RegisterMessageReceiver } from '../providers/register-message-receiver';
 
 export interface QueueType {
   queueControllerName: string;

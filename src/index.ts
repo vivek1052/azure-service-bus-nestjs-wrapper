@@ -1,3 +1,5 @@
+export { ServiceBusReceiverOptions } from '@azure/service-bus';
+
 export { ServiceBusModule } from './modules/service-bus.module';
 
 export { ModuleOptions } from './interfaces/module-options.interface';
