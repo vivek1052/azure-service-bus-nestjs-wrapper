@@ -1,6 +1,6 @@
 import { SetMetadata } from '@nestjs/common';
 import { QUEUE_CONTROLLER_NAME, QUEUE_CONTROLLER_OPTIONS } from '../constants';
-import { QueueControllerOptions } from 'src/interfaces/queue-controller-options.interface';
+import { QueueControllerOptions } from '../interfaces/queue-controller-options.interface';
 
 /**
  *

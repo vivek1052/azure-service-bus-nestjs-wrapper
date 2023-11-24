@@ -1,6 +1,6 @@
 import { SetMetadata } from '@nestjs/common';
 import { QUEUE_NAME, QUEUE_OPTIONS } from '../constants';
-import { QueueOptions } from 'src/interfaces/queue-options.interface';
+import { QueueOptions } from '../interfaces/queue-options.interface';
 
 /**
  *Queue Decorator will listen to the queue having name provided in QueueController + Queuename.

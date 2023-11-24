@@ -12,7 +12,7 @@ import {
   QUEUE_OPTIONS,
 } from '../constants';
 import { ServiceBusQueueReceiver } from '../libs/service-bus-queue-receiver';
-import { QueueOptions } from 'src/interfaces/queue-options.interface';
+import { QueueOptions } from '../interfaces/queue-options.interface';
 
 @Injectable()
 export class RegisterQueueReceiver {
