@@ -1,4 +1,8 @@
-export { ServiceBusReceiverOptions } from '@azure/service-bus';
+export {
+  ServiceBusReceiverOptions,
+  ServiceBusReceivedMessage,
+  ServiceBusReceiver,
+} from '@azure/service-bus';
 
 export { ServiceBusModule } from './modules/service-bus.module';
 
