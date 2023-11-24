@@ -12,6 +12,7 @@ import {
   QUEUE_OPTIONS,
 } from '../constants';
 import { ServiceBusQueueReceiver } from '../libs/service-bus-queue-receiver';
+import { QueueOptions } from 'src/interfaces/queue-options.interface';
 
 @Injectable()
 export class RegisterQueueReceiver {
@@ -36,7 +37,7 @@ export class RegisterQueueReceiver {
 
     await this.createServiceBusQueue(fullQueueName);
 
-    const serviceBusReceiverOptions = this.getServiceBusReceiverOptions(
+    const { receiverOptions, subscribeOptions } = this.getQueueOptions(
       instance[methodName],
     );
 
@@ -46,7 +47,8 @@ export class RegisterQueueReceiver {
         instance,
         methodName,
         this.serviceBusClient,
-        serviceBusReceiverOptions,
+        receiverOptions,
+        subscribeOptions,
       ),
     );
     this.logger.log(`Queue receiver registered for queue ${fullQueueName}`);
@@ -69,7 +71,7 @@ export class RegisterQueueReceiver {
     return !!this.getQueueName(target);
   }
 
-  private getServiceBusReceiverOptions(target: any) {
+  private getQueueOptions(target: any): QueueOptions {
     return this.reflector.get(QUEUE_OPTIONS, target);
   }
 

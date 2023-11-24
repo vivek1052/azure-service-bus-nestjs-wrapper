@@ -1,7 +1,6 @@
 import {
   ServiceBusAdministrationClient,
   ServiceBusClient,
-  ServiceBusReceiverOptions,
 } from '@azure/service-bus';
 import {
   Inject,
@@ -18,6 +17,7 @@ import {
   QUEUE_CONTROLLER_OPTIONS,
 } from '../constants';
 import { ServiceBusMessageReceiver } from '../libs/service-bus-message-receiver';
+import { QueueControllerOptions } from 'src/interfaces/queue-controller-options.interface';
 
 @Injectable()
 export class RegisterMessageReceiver {
@@ -49,11 +49,15 @@ export class RegisterMessageReceiver {
     await this.createServiceBusQueue(queueControllerName);
 
     if (!this.serviceBusMessageReceiver) {
+      const { receiverOptions, subscribeOptions } =
+        this.getQueueControllerOptions(metatype);
+
       this.serviceBusMessageReceiver = new ServiceBusMessageReceiver(
         queueControllerName,
         this.messageTypePropertyName,
         this.serviceBusClient,
-        this.getServiceBusReceiverOptions(metatype),
+        receiverOptions,
+        subscribeOptions,
       );
     }
 
@@ -78,7 +82,7 @@ export class RegisterMessageReceiver {
     return !!this.getMessageTypeName(target);
   }
 
-  private getServiceBusReceiverOptions(target: any): ServiceBusReceiverOptions {
+  private getQueueControllerOptions(target: any): QueueControllerOptions {
     return this.reflector.get(QUEUE_CONTROLLER_OPTIONS, target);
   }
 

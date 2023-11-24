@@ -1,6 +1,6 @@
-import { ServiceBusReceiverOptions } from '@azure/service-bus';
 import { SetMetadata } from '@nestjs/common';
 import { QUEUE_NAME, QUEUE_OPTIONS } from '../constants';
+import { QueueOptions } from 'src/interfaces/queue-options.interface';
 
 /**
  *Queue Decorator will listen to the queue having name provided in QueueController + Queuename.
@@ -11,14 +11,10 @@ import { QUEUE_NAME, QUEUE_OPTIONS } from '../constants';
  */
 export function Queue(
   queueName: string,
-  serviceBusReceiverOptions?: ServiceBusReceiverOptions,
+  queueOptions: QueueOptions,
 ): MethodDecorator {
   return (target, propertyKey, descriptor): void => {
     SetMetadata(QUEUE_NAME, queueName)(target, propertyKey, descriptor);
-    SetMetadata(QUEUE_OPTIONS, serviceBusReceiverOptions)(
-      target,
-      propertyKey,
-      descriptor,
-    );
+    SetMetadata(QUEUE_OPTIONS, queueOptions)(target, propertyKey, descriptor);
   };
 }

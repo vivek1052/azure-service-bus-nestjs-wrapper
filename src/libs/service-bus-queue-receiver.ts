@@ -4,6 +4,7 @@ import {
   ServiceBusReceivedMessage,
   ServiceBusReceiver,
   ServiceBusReceiverOptions,
+  SubscribeOptions,
 } from '@azure/service-bus';
 import { InternalServerErrorException } from '@nestjs/common';
 
@@ -16,19 +17,23 @@ export class ServiceBusQueueReceiver {
     private readonly queueControllerMethodName: string,
     serviceBusClient: ServiceBusClient,
     serviceBusReceiverOptions?: ServiceBusReceiverOptions,
+    subscribeOptions?: SubscribeOptions,
   ) {
     this.serviceBusReceiver = serviceBusClient.createReceiver(
       queueName,
       serviceBusReceiverOptions,
     );
-    this.serviceBusReceiver.subscribe({
-      processMessage: (message) => this.processMessage(message),
-      processError: (args) => this.processError(args),
-    });
+    this.serviceBusReceiver.subscribe(
+      {
+        processMessage: (message) => this.processMessage(message),
+        processError: (args) => this.processError(args),
+      },
+      subscribeOptions,
+    );
   }
 
   private async processMessage(message: ServiceBusReceivedMessage) {
-    this.queueControllerInstance[this.queueControllerMethodName](
+    await this.queueControllerInstance[this.queueControllerMethodName](
       message,
       this.serviceBusReceiver,
     );
