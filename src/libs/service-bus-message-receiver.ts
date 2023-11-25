@@ -36,11 +36,13 @@ export class ServiceBusMessageReceiver {
     );
   }
 
-  private async processMessage(message: ServiceBusReceivedMessage) {
+  private async processMessage(
+    message: ServiceBusReceivedMessage,
+  ): Promise<void> {
     const { controllerInstance, methodName } = this.messageTypeMap.get(
       message.applicationProperties[this.messageTypePropertyName] as string,
     );
-    await controllerInstance[methodName](message, this.serviceBusReceiver);
+    return controllerInstance[methodName](message, this.serviceBusReceiver);
   }
 
   private async processError(args: ProcessErrorArgs) {

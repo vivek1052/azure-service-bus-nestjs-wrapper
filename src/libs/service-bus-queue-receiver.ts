@@ -33,7 +33,7 @@ export class ServiceBusQueueReceiver {
   }
 
   private async processMessage(message: ServiceBusReceivedMessage) {
-    await this.queueControllerInstance[this.queueControllerMethodName](
+    return this.queueControllerInstance[this.queueControllerMethodName](
       message,
       this.serviceBusReceiver,
     );
