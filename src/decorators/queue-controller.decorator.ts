@@ -1,6 +1,14 @@
 import { SetMetadata } from '@nestjs/common';
 import { QUEUE_CONTROLLER_NAME, QUEUE_CONTROLLER_OPTIONS } from '../constants';
-import { QueueControllerOptions } from '../interfaces/queue-controller-options.interface';
+import {
+  ServiceBusReceiverOptions,
+  SubscribeOptions,
+} from '@azure/service-bus';
+
+export interface QueueControllerOptions {
+  receiverOptions: ServiceBusReceiverOptions;
+  subscribeOptions: SubscribeOptions;
+}
 
 /**
  *

@@ -1,6 +1,8 @@
 import {
   ServiceBusAdministrationClient,
+  ServiceBusAdministrationClientOptions,
   ServiceBusClient,
+  ServiceBusClientOptions,
 } from '@azure/service-bus';
 import { DynamicModule, Provider } from '@nestjs/common';
 import { DiscoveryModule } from '@nestjs/core';
@@ -8,10 +10,16 @@ import {
   MESSAGE_TYPE_PROPERTY_NAME,
   QUEUE_NAME_SEPARATOR,
 } from 'src/constants';
-import { ModuleOptions } from '../interfaces/module-options.interface';
-import { ServiceBusExplorer } from '../libs/service-bus.explorer';
-import { RegisterMessageReceiver } from '../providers/register-message-receiver';
-import { RegisterQueueReceiver } from '../providers/register-queue-receiver';
+import { ConnectionFactory } from '../providers/connection-factory';
+import { ConnectionPool } from '../providers/connection-pool';
+import { ServiceBusExplorer } from '../providers/service-bus.explorer';
+
+export interface ModuleOptions {
+  separator?: string;
+  messageTypePropertyName: string;
+  serviceBusClientOptions?: ServiceBusClientOptions;
+  serviceBusAdministrationClientOptions?: ServiceBusAdministrationClientOptions;
+}
 
 export class ServiceBusModule {
   static forRoot(
@@ -47,8 +55,8 @@ export class ServiceBusModule {
           useValue: options?.messageTypePropertyName || 'messageType',
         },
         ServiceBusExplorer,
-        RegisterMessageReceiver,
-        RegisterQueueReceiver,
+        ConnectionFactory,
+        ConnectionPool,
       ],
       exports: [],
     };

@@ -1,6 +1,14 @@
 import { SetMetadata } from '@nestjs/common';
 import { QUEUE_NAME, QUEUE_OPTIONS } from '../constants';
-import { QueueOptions } from '../interfaces/queue-options.interface';
+import {
+  ServiceBusReceiverOptions,
+  SubscribeOptions,
+} from '@azure/service-bus';
+
+export interface QueueOptions {
+  receiverOptions: ServiceBusReceiverOptions;
+  subscribeOptions: SubscribeOptions;
+}
 
 /**
  *Queue Decorator will listen to the queue having name provided in QueueController + Queuename.
