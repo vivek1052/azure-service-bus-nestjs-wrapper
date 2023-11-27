@@ -19,7 +19,7 @@ export interface QueueOptions {
  */
 export function Queue(
   queueName: string,
-  queueOptions: QueueOptions,
+  queueOptions?: QueueOptions,
 ): MethodDecorator {
   return (target, propertyKey, descriptor): void => {
     SetMetadata(QUEUE_NAME, queueName)(target, propertyKey, descriptor);
