@@ -65,7 +65,7 @@ export class MessageConnection {
   ) {}
 
   connect(): this {
-    if (!this.serviceBusReceiver.isClosed || !this.serviceBusSender.isClosed) {
+    if (this.serviceBusReceiver && this.serviceBusSender) {
       throw new InternalServerErrorException('Connection already exists');
     }
 

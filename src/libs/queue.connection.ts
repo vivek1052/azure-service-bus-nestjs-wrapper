@@ -26,12 +26,7 @@ export class QueueConnection {
   ) {}
 
   connect(): this {
-    if (
-      this.serviceBusReceiver &&
-      this.serviceBusSender &&
-      !this.serviceBusReceiver.isClosed &&
-      !this.serviceBusSender.isClosed
-    ) {
+    if (this.serviceBusReceiver && this.serviceBusSender) {
       throw new InternalServerErrorException('Connection already exists');
     }
 
