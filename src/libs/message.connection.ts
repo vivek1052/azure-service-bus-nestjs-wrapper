@@ -64,14 +64,14 @@ export class MessageConnection {
     private readonly subscribeOptions?: SubscribeOptions,
   ) {}
 
-  connect(): MessageConnection {
+  connect(): this {
     if (!this.serviceBusReceiver.isClosed || !this.serviceBusSender.isClosed) {
       throw new InternalServerErrorException('Connection already exists');
     }
 
     if (this.messageTypeMethodMap.size === 0) {
       this.logger.error('No message handlers registered');
-      return;
+      return null;
     }
 
     this.createQueueInServiceBus();
@@ -126,7 +126,7 @@ export class MessageConnection {
     messageTypeName: string,
     queueControllerInstance: any,
     methodName: string,
-  ): MessageConnection {
+  ): this {
     if (this.messageTypeMethodMap.has(messageTypeName)) {
       throw new InternalServerErrorException(
         `Message type ${messageTypeName} already registered`,

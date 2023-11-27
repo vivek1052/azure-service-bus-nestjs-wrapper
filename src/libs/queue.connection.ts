@@ -25,8 +25,13 @@ export class QueueConnection {
     private readonly subscribeOptions?: SubscribeOptions,
   ) {}
 
-  connect(): QueueConnection {
-    if (!this.serviceBusReceiver.isClosed || !this.serviceBusSender.isClosed) {
+  connect(): this {
+    if (
+      this.serviceBusReceiver &&
+      this.serviceBusSender &&
+      !this.serviceBusReceiver.isClosed &&
+      !this.serviceBusSender.isClosed
+    ) {
       throw new InternalServerErrorException('Connection already exists');
     }
 
@@ -67,10 +72,7 @@ export class QueueConnection {
     );
   }
 
-  registerHandler(
-    queueControllerInstance: any,
-    methodName: string,
-  ): QueueConnection {
+  registerHandler(queueControllerInstance: any, methodName: string): this {
     this.queueControllerInstance = queueControllerInstance;
     this.methodName = methodName;
     return this;

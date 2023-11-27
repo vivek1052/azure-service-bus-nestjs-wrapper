@@ -13,7 +13,7 @@ export class ConnectionPool {
     queueName: string,
     connection: MessageConnection | QueueConnection,
   ) {
-    if (!this.connectionPool.has(queueName)) {
+    if (this.connectionPool.has(queueName)) {
       throw new InternalServerErrorException(
         `${queueName} already exists in the connection pool`,
       );
@@ -23,7 +23,7 @@ export class ConnectionPool {
   }
 
   getConnection(queueName: string): MessageConnection | QueueConnection {
-    if (this.connectionPool.has(queueName)) {
+    if (!this.connectionPool.has(queueName)) {
       throw new InternalServerErrorException(
         `${queueName} doesn't exists in the connection pool`,
       );
