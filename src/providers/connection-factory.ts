@@ -60,8 +60,8 @@ export class ConnectionFactory {
       fullQueueName,
       this.serviceBusClient,
       this.serviceBusAdministrationClient,
-      queueOptions.receiverOptions,
-      queueOptions.subscribeOptions,
+      queueOptions?.receiverOptions,
+      queueOptions?.subscribeOptions,
     )
       .registerHandler(instance, methodName)
       .connect();
@@ -94,11 +94,11 @@ export class ConnectionFactory {
       this.serviceBusClient,
       this.serviceBusAdministrationClient,
       this.messageTypePropertyName,
-      queueControllerOptions.receiverOptions,
-      queueControllerOptions.subscribeOptions,
+      queueControllerOptions?.receiverOptions,
+      queueControllerOptions?.subscribeOptions,
     );
 
-    for (let methodName of methodNames) {
+    for (const methodName of methodNames) {
       messageConnection.registerHandler(
         this.reflector.get(MESSAGE_TYPE, instance[methodName]),
         instance,
