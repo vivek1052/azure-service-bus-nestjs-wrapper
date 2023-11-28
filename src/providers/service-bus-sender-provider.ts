@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConnectionPool } from './connection-pool';
 import { QueueConnection } from '../libs/queue.connection';
 import { ServiceBusSender } from '@azure/service-bus';
