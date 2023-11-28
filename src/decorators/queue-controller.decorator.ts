@@ -6,8 +6,8 @@ import {
 } from '@azure/service-bus';
 
 export interface QueueControllerOptions {
-  receiverOptions: ServiceBusReceiverOptions;
-  subscribeOptions: SubscribeOptions;
+  receiverOptions?: ServiceBusReceiverOptions;
+  subscribeOptions?: SubscribeOptions;
 }
 
 /**
