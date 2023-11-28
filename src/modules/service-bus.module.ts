@@ -6,13 +6,11 @@ import {
 } from '@azure/service-bus';
 import { DynamicModule, Provider } from '@nestjs/common';
 import { DiscoveryModule } from '@nestjs/core';
-import {
-  MESSAGE_TYPE_PROPERTY_NAME,
-  QUEUE_NAME_SEPARATOR,
-} from 'src/constants';
+import { MESSAGE_TYPE_PROPERTY_NAME, QUEUE_NAME_SEPARATOR } from '../constants';
 import { ConnectionFactory } from '../providers/connection-factory';
 import { ConnectionPool } from '../providers/connection-pool';
 import { ServiceBusExplorer } from '../providers/service-bus.explorer';
+import { ServiceBusSenderProvider } from '../providers/service-bus-sender-provider';
 
 export interface ModuleOptions {
   separator?: string;
@@ -57,8 +55,9 @@ export class ServiceBusModule {
         ServiceBusExplorer,
         ConnectionFactory,
         ConnectionPool,
+        ServiceBusSenderProvider,
       ],
-      exports: [],
+      exports: [ServiceBusSenderProvider],
     };
   }
 }

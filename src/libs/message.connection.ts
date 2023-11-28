@@ -14,14 +14,14 @@ import {
 } from '@azure/service-bus';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 
-class MessageTypeSender {
+export class MessageTypeSender {
   constructor(
     private readonly serviceBusSender: ServiceBusSender,
     private readonly messageTypeName: string,
     private readonly messageTypePropertyName: string,
   ) {}
 
-  async sendMessage(
+  async sendMessages(
     messages:
       | ServiceBusMessage
       | ServiceBusMessage[]
