@@ -23,7 +23,7 @@ import { CatsQueueController } from './cats.queue-controller.ts';
 export class RootModule {}
 ```
 
-[ServiceBusClientOptions](https://learn.microsoft.com/en-in/javascript/api/@azure/service-bus/servicebusclientoptions?view=azure-node-latest) and [ServiceBusAdministrationClientOptions](https://learn.microsoft.com/en-in/javascript/api/@azure/service-bus/servicebusadministrationclientoptions?view=azure-node-latest) can be provided to ServiceBusModule.forRoot() factory method.
+> [ServiceBusClientOptions](https://learn.microsoft.com/en-in/javascript/api/@azure/service-bus/servicebusclientoptions?view=azure-node-latest) and [ServiceBusAdministrationClientOptions](https://learn.microsoft.com/en-in/javascript/api/@azure/service-bus/servicebusadministrationclientoptions?view=azure-node-latest) can be provided to ServiceBusModule.forRoot() factory method.
 
 ## Design walkthrough
 
