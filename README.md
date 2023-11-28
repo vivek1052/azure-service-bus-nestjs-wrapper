@@ -1,73 +1,44 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Azure Service Bus Nestjs Wrapper
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is a wrapper library which provides modules for [Azure Service Bus](https://www.npmjs.com/package/@azure/service-bus) package. It allows to create Queues/Controllers using decorators just as Nestjs.
 
 ## Installation
 
-```bash
-$ npm install
+```
+npm install @azure/service-bus
+npm install @sede-x/azure-service-bus-nestjs-wrapper
 ```
 
-## Running the app
+## Design walkthrough
 
-```bash
-# development
-$ npm run start
+There are some design liberty taken which needs to be familiar with.
 
-# watch mode
-$ npm run start:dev
+- **QueueController:** Similar to controllers in Nestjs, QueueController acts as a parent and holds all the queue paths and message types. It can take a name or can be empty. Any class can be created as a QueueController by using decorator @QueueController()
 
-# production mode
-$ npm run start:prod
+```
+import {QueueController} from "@sede-x/azure-service-bus-nestjs-wrapper"
+
+@QueueController('cats')
+export class CatsQueueController{
+
+}
 ```
 
-## Test
+- **Queue:** Queues will create a queue in Azure Service Bus and register the method decorated with @Queue() as the message processor. It will take a name as parameter which will be the name of queue.
 
-```bash
-# unit tests
-$ npm run test
+  > Name of the queue depends on QueueController name and Queue name. If QueueController name is provided, it will be used as a suffix with Queue name separated by '.'. This separator is configurable from dynamic module creation. It QueueController name is empty, Azure Service Bus queue will be create with just the name provided to @Queue()
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
+import {ServiceBusReceivedMessage,ServiceBusReceiver} from '@azure/service-bus';
+import {QueueController} from "@sede-x/azure-service-bus-nestjs-wrapper"
 
-## Support
+@QueueController('cats')
+export class CatsQueueController{
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+  @Queue('cat-adopted')
+  async catAdopted(message: ServiceBusReceivedMessage, serviceBusReceiver: ServiceBusReceiver): Promise<void>{
+    console.log(message.body);
+    return serviceBusReceiver.completeMessage(message);
+  }
+}
+```
