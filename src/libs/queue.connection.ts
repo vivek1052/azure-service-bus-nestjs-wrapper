@@ -25,7 +25,7 @@ export class QueueConnection {
     private readonly subscribeOptions?: SubscribeOptions,
   ) {}
 
-  connect(): this {
+  async connect(): Promise<this> {
     if (this.serviceBusReceiver && this.serviceBusSender) {
       throw new InternalServerErrorException('Connection already exists');
     }
@@ -34,7 +34,7 @@ export class QueueConnection {
       throw new InternalServerErrorException('No queue handler registered');
     }
 
-    this.createQueueInServiceBus();
+    await this.createQueueInServiceBus();
 
     this.serviceBusReceiver = this.serviceBusClient.createReceiver(
       this.queueName,

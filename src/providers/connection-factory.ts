@@ -34,10 +34,10 @@ export class ConnectionFactory {
     private readonly messageTypePropertyName,
   ) {}
 
-  createQueueConnection(
+  async createQueueConnection(
     queueController: InstanceWrapper,
     methodName: string,
-  ): QueueConnection {
+  ): Promise<QueueConnection> {
     const { instance, metatype } = queueController;
 
     const queueControllerName = this.reflector.get(
@@ -67,10 +67,10 @@ export class ConnectionFactory {
       .connect();
   }
 
-  createMessageConnection(
+  async createMessageConnection(
     queueController: InstanceWrapper,
     methodNames: string[],
-  ): MessageConnection {
+  ): Promise<MessageConnection> {
     const { instance, metatype } = queueController;
 
     const queueControllerName = this.reflector.get(

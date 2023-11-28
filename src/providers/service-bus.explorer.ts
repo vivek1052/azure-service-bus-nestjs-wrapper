@@ -49,10 +49,11 @@ export class ServiceBusExplorer implements OnModuleInit, OnModuleDestroy {
 
       for (const methodName of methodNames) {
         if (this.isQueueHandlerMethod(queueController, methodName)) {
-          const queueConnection = this.connectionFactory.createQueueConnection(
-            queueController,
-            methodName,
-          );
+          const queueConnection =
+            await this.connectionFactory.createQueueConnection(
+              queueController,
+              methodName,
+            );
           this.connectionPool.addConnection(
             queueConnection.queueName,
             queueConnection,
@@ -68,10 +69,11 @@ export class ServiceBusExplorer implements OnModuleInit, OnModuleDestroy {
       }
 
       if (messageConnection.methodNames.length > 0) {
-        const messageQueue = this.connectionFactory.createMessageConnection(
-          messageConnection.queueController,
-          messageConnection.methodNames,
-        );
+        const messageQueue =
+          await this.connectionFactory.createMessageConnection(
+            messageConnection.queueController,
+            messageConnection.methodNames,
+          );
         this.connectionPool.addConnection(messageQueue.queueName, messageQueue);
         this.logger.log(
           `Message handler registered for message types ${messageConnection.methodNames.toString()}`,
