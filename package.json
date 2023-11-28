@@ -1,5 +1,5 @@
 {
-  "name": "azure-sb-nestjs-wrapper",
+  "name": "@sede-x/azure-service-bus-nestjs-wrapper",
   "version": "0.0.1-beta",
   "description": "",
   "author": "",
