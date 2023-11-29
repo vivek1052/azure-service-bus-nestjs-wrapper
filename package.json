@@ -1,8 +1,8 @@
 {
   "name": "azure-service-bus-nestjs-wrapper",
-  "version": "0.0.1-beta",
-  "description": "",
-  "author": "",
+  "version": "0.1.1-beta",
+  "description": "Nestjs wrapper for Azure Service Bus",
+  "author": "Vivek Parashar | vivekparashar811@gmail.com",
   "license": "UNLICENSED",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
