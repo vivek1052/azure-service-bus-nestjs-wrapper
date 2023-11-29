@@ -6,14 +6,14 @@ This is a wrapper library which provides modules for [Azure Service Bus](https:/
 
 ```
 npm install @azure/service-bus
-npm install @sede-x/azure-service-bus-nestjs-wrapper
+npm install azure-service-bus-nestjs-wrapper
 ```
 
 Post installation, it can be imported to root module
 
 ```
 import { Module } from '@nestjs/common';
-import { ServiceBusModule } from '@sede-x/azure-service-bus-nestjs-wrapper';
+import { ServiceBusModule } from 'azure-service-bus-nestjs-wrapper';
 import { CatsQueueController } from './cats.queue-controller.ts';
 
 @Module({
@@ -32,7 +32,7 @@ There are some design liberty taken which needs to be familiar with.
 - **QueueController:** Similar to controllers in Nestjs, QueueController acts as a parent and holds all the queue paths and message types. It can take a name or can be empty. Any class can be created as a QueueController by using decorator @QueueController(). QueueControllers are to be added as _providers_ to root module.
 
 ```
-import {QueueController} from "@sede-x/azure-service-bus-nestjs-wrapper"
+import {QueueController} from "azure-service-bus-nestjs-wrapper"
 
 @QueueController('cats')
 export class CatsQueueController{
@@ -50,7 +50,7 @@ export class CatsQueueController{
 
 ```
 import {ServiceBusReceivedMessage,ServiceBusReceiver} from '@azure/service-bus';
-import {QueueController,Queue} from "@sede-x/azure-service-bus-nestjs-wrapper"
+import {QueueController,Queue} from "azure-service-bus-nestjs-wrapper"
 
 @QueueController('cats')
 export class CatsQueueController{
@@ -72,7 +72,7 @@ export class CatsQueueController{
 
 ```
 import {ServiceBusReceivedMessage,ServiceBusReceiver} from '@azure/service-bus';
-import {QueueController,MessageType} from "@sede-x/azure-service-bus-nestjs-wrapper"
+import {QueueController,MessageType} from "azure-service-bus-nestjs-wrapper"
 
 @QueueController('cats')
 export class CatsQueueController{
