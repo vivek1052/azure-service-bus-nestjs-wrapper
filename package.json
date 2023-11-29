@@ -1,5 +1,5 @@
 {
-  "name": "@sede-x/azure-service-bus-nestjs-wrapper",
+  "name": "azure-service-bus-nestjs-wrapper",
   "version": "0.0.1-beta",
   "description": "",
   "author": "",
@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git@github.com:sede-x/azure-service-bus-nestjs-wrapper.git"
+    "url": "git@github.com:vivek1052/azure-service-bus-nestjs-wrapper.git"
   },
   "scripts": {
     "build": "nest build",
