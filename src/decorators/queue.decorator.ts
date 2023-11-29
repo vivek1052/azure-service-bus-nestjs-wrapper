@@ -14,9 +14,11 @@ export interface QueueOptions {
  *Queue Decorator will listen to the queue having name provided in QueueController + Queuename.
  eg:- QueueController('SERVICE-A') and Queue('APPROVE-ENTITY) will listen to queue SERVICE-A/APPROVE-ENTITY
  If QueueController name is empty, it will listen to queue with name queueName itself.
- * @param queueName
+ * @param queueName 
+ * @param queueOptions 
  * @returns MethodDecorator
  */
+
 export function Queue(
   queueName: string,
   queueOptions?: QueueOptions,

@@ -3,13 +3,16 @@
   "version": "0.0.1-beta",
   "description": "",
   "author": "",
-  "private": true,
   "license": "UNLICENSED",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:sede-x/azure-service-bus-nestjs-wrapper.git"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
