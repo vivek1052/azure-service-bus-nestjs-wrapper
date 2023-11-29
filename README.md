@@ -90,7 +90,7 @@ export class CatsQueueController{
 
 ```
 import { Injectable } from "@nestjs/common";
-import { ServiceBusSenderProvider } from "src/providers/service-bus-sender-provider";
+import { ServiceBusSenderProvider } from "azure-service-bus-nestjs-wrapper";
 
 @Injectable()
 export class CatsService{
