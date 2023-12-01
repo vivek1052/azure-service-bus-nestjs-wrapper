@@ -11,11 +11,6 @@ import { MESSAGE_TYPE, QUEUE_CONTROLLER_NAME, QUEUE_NAME } from '../constants';
 import { ConnectionFactory } from './connection-factory';
 import { ConnectionPool } from './connection-pool';
 
-interface MessageConnectionType {
-  queueController: InstanceWrapper;
-  methodNames: string[];
-}
-
 @Injectable()
 export class ServiceBusExplorer implements OnModuleInit, OnModuleDestroy {
   constructor(
