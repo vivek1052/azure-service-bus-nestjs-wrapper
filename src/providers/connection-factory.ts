@@ -6,6 +6,7 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
@@ -20,8 +21,10 @@ import {
 } from '../constants';
 import { QueueControllerOptions } from '../decorators/queue-controller.decorator';
 import { QueueOptions } from '../decorators/queue.decorator';
-import { MessageConnection } from '../libs/message.connection';
-import { QueueConnection } from '../libs/queue.connection';
+import { MessageReceiver } from '../libs/message.receiver';
+import { QueueReceiver } from '../libs/queue.receiver';
+import { QueueSender } from '../libs/queue.sender';
+import { MessageSender } from '../libs/message.sender';
 
 @Injectable()
 export class ConnectionFactory {
@@ -32,12 +35,13 @@ export class ConnectionFactory {
     @Inject(QUEUE_NAME_SEPARATOR) private readonly queueNameSeparator: string,
     @Inject(MESSAGE_TYPE_PROPERTY_NAME)
     private readonly messageTypePropertyName,
+    private readonly logger: Logger,
   ) {}
 
-  async createQueueConnection(
+  async createQueueReceiver(
     queueController: InstanceWrapper,
     methodName: string,
-  ): Promise<QueueConnection> {
+  ): Promise<QueueReceiver> {
     const { instance, metatype } = queueController;
 
     const queueControllerName = this.reflector.get(
@@ -56,10 +60,11 @@ export class ConnectionFactory {
       instance[methodName],
     );
 
-    return new QueueConnection(
+    return new QueueReceiver(
       fullQueueName,
       this.serviceBusClient,
       this.serviceBusAdministrationClient,
+      this.logger,
       queueOptions?.receiverOptions,
       queueOptions?.subscribeOptions,
     )
@@ -67,10 +72,10 @@ export class ConnectionFactory {
       .connect();
   }
 
-  async createMessageConnection(
+  async createMessageReceiver(
     queueController: InstanceWrapper,
     methodNames: string[],
-  ): Promise<MessageConnection> {
+  ): Promise<MessageReceiver> {
     const { instance, metatype } = queueController;
 
     const queueControllerName = this.reflector.get(
@@ -89,23 +94,43 @@ export class ConnectionFactory {
       metatype,
     );
 
-    const messageConnection = new MessageConnection(
+    const messageReceiver = new MessageReceiver(
       queueControllerName,
       this.serviceBusClient,
       this.serviceBusAdministrationClient,
       this.messageTypePropertyName,
+      this.logger,
       queueControllerOptions?.receiverOptions,
       queueControllerOptions?.subscribeOptions,
     );
 
     for (const methodName of methodNames) {
-      messageConnection.registerHandler(
+      messageReceiver.registerHandler(
         this.reflector.get(MESSAGE_TYPE, instance[methodName]),
         instance,
         methodName,
       );
     }
 
-    return messageConnection.connect();
+    return messageReceiver.connect();
+  }
+
+  async createQueueSender(queueName): Promise<QueueSender> {
+    return new QueueSender(
+      queueName,
+      this.serviceBusClient,
+      this.serviceBusAdministrationClient,
+      this.logger,
+    ).connect();
+  }
+
+  async createMessageSender(queueName): Promise<MessageSender> {
+    return new MessageSender(
+      queueName,
+      this.serviceBusClient,
+      this.messageTypePropertyName,
+      this.serviceBusAdministrationClient,
+      this.logger,
+    ).connect();
   }
 }

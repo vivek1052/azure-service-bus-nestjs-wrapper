@@ -1,4 +1,4 @@
-import { ServiceBusClient, ServiceBusReceiver } from '@azure/service-bus';
+import { ServiceBusClient } from '@azure/service-bus';
 import {
   Injectable,
   Logger,
@@ -18,7 +18,6 @@ interface MessageConnectionType {
 
 @Injectable()
 export class ServiceBusExplorer implements OnModuleInit, OnModuleDestroy {
-  private readonly logger = new Logger(ServiceBusExplorer.name);
   constructor(
     private readonly serviceBusClient: ServiceBusClient,
     private readonly connectionFactory: ConnectionFactory,
@@ -26,6 +25,7 @@ export class ServiceBusExplorer implements OnModuleInit, OnModuleDestroy {
     private readonly metadataScanner: MetadataScanner,
     private readonly reflector: Reflector,
     private readonly connectionPool: ConnectionPool,
+    private readonly logger: Logger,
   ) {}
   onModuleDestroy() {
     this.serviceBusClient.close();
@@ -42,41 +42,41 @@ export class ServiceBusExplorer implements OnModuleInit, OnModuleDestroy {
         `Registering handler for queue controller ${queueController.metatype.name}`,
       );
 
-      const messageConnection: MessageConnectionType = {
-        queueController,
-        methodNames: [],
-      };
+      const messageTypeMethodNames: string[] = [];
 
       for (const methodName of methodNames) {
         if (this.isQueueHandlerMethod(queueController, methodName)) {
-          const queueConnection =
-            await this.connectionFactory.createQueueConnection(
+          const queueReceiver =
+            await this.connectionFactory.createQueueReceiver(
               queueController,
               methodName,
             );
-          this.connectionPool.addConnection(
-            queueConnection.queueName,
-            queueConnection,
+          this.connectionPool.addReceiver(
+            queueReceiver.queueName,
+            queueReceiver,
           );
           this.logger.log(
-            `Queue handler registered for queue ${queueConnection.queueName}`,
+            `Queue handler registered for queue ${queueReceiver.queueName}`,
           );
         }
 
         if (this.isMethodTypeHandlerMethod(queueController, methodName)) {
-          messageConnection.methodNames.push(methodName);
+          messageTypeMethodNames.push(methodName);
         }
       }
 
-      if (messageConnection.methodNames.length > 0) {
-        const messageQueue =
-          await this.connectionFactory.createMessageConnection(
-            messageConnection.queueController,
-            messageConnection.methodNames,
+      if (messageTypeMethodNames.length > 0) {
+        const messageReceiver =
+          await this.connectionFactory.createMessageReceiver(
+            queueController,
+            messageTypeMethodNames,
           );
-        this.connectionPool.addConnection(messageQueue.queueName, messageQueue);
+        this.connectionPool.addReceiver(
+          messageReceiver.queueName,
+          messageReceiver,
+        );
         this.logger.log(
-          `Message handler registered for message types ${messageConnection.methodNames.toString()}`,
+          `Message handler registered for message types ${messageTypeMethodNames.toString()}`,
         );
       }
     }

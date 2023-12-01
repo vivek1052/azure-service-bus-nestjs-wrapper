@@ -1,37 +1,40 @@
 import {
-  ProcessErrorArgs,
-  ServiceBusAdministrationClient,
   ServiceBusClient,
-  ServiceBusReceivedMessage,
-  ServiceBusReceiver,
+  ServiceBusAdministrationClient,
   ServiceBusReceiverOptions,
-  ServiceBusSender,
   SubscribeOptions,
+  ServiceBusReceiver,
+  ServiceBusReceivedMessage,
+  ProcessErrorArgs,
 } from '@azure/service-bus';
 import { InternalServerErrorException, Logger } from '@nestjs/common';
 
-export class QueueConnection {
-  private readonly logger = new Logger(QueueConnection.name);
+export class MessageReceiver {
   private serviceBusReceiver: ServiceBusReceiver;
-  private serviceBusSender: ServiceBusSender;
-  private queueControllerInstance: any;
-  private methodName: string;
+
+  private readonly messageTypeMethodMap: Map<
+    string,
+    { queueControllerInstance: any; methodName: string }
+  > = new Map();
 
   constructor(
     readonly queueName: string,
     private readonly serviceBusClient: ServiceBusClient,
     private readonly serviceBusAdministrationClient: ServiceBusAdministrationClient,
+    private readonly messageTypePropertyName: string,
+    private readonly logger: Logger,
     private readonly serviceBusReceiverOptions?: ServiceBusReceiverOptions,
     private readonly subscribeOptions?: SubscribeOptions,
   ) {}
 
   async connect(): Promise<this> {
-    if (this.serviceBusReceiver && this.serviceBusSender) {
-      throw new InternalServerErrorException('Connection already exists');
+    if (this.serviceBusReceiver) {
+      throw new InternalServerErrorException('Receiver already exists');
     }
 
-    if (!this.queueControllerInstance || !this.methodName) {
-      throw new InternalServerErrorException('No queue handler registered');
+    if (this.messageTypeMethodMap.size === 0) {
+      this.logger.error('No message handlers registered');
+      return null;
     }
 
     await this.createQueueInServiceBus();
@@ -40,8 +43,6 @@ export class QueueConnection {
       this.queueName,
       this.serviceBusReceiverOptions,
     );
-
-    this.serviceBusSender = this.serviceBusClient.createSender(this.queueName);
 
     this.serviceBusReceiver.subscribe(
       {
@@ -54,22 +55,39 @@ export class QueueConnection {
     return this;
   }
 
-  private async processError(args: ProcessErrorArgs): Promise<void> {
-    this.logger.error(args);
-  }
-
   private async processMessage(
     message: ServiceBusReceivedMessage,
   ): Promise<void> {
-    return this.queueControllerInstance[this.methodName](
+    const { methodName, queueControllerInstance } =
+      this.messageTypeMethodMap.get(
+        message.applicationProperties[this.messageTypePropertyName] as string,
+      );
+    return queueControllerInstance[methodName](
       message,
       this.serviceBusReceiver,
     );
   }
 
-  registerHandler(queueControllerInstance: any, methodName: string): this {
-    this.queueControllerInstance = queueControllerInstance;
-    this.methodName = methodName;
+  private async processError(args: ProcessErrorArgs): Promise<void> {
+    this.logger.error(args);
+  }
+
+  registerHandler(
+    messageTypeName: string,
+    queueControllerInstance: any,
+    methodName: string,
+  ): this {
+    if (this.messageTypeMethodMap.has(messageTypeName)) {
+      throw new InternalServerErrorException(
+        `Message type ${messageTypeName} already registered`,
+      );
+    }
+
+    this.messageTypeMethodMap.set(messageTypeName, {
+      queueControllerInstance,
+      methodName,
+    });
+
     return this;
   }
 
@@ -88,9 +106,5 @@ export class QueueConnection {
         );
       }
     }
-  }
-
-  getSender(): ServiceBusSender {
-    return this.serviceBusSender;
   }
 }

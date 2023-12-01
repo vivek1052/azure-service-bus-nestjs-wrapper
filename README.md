@@ -17,7 +17,9 @@ import { ServiceBusModule } from 'azure-service-bus-nestjs-wrapper';
 import { CatsQueueController } from './cats.queue-controller.ts';
 
 @Module({
-  imports: [ServiceBusModule.forRoot('connection string')],
+  imports: [
+    ServiceBusModule.forRoot({ connectionString: 'connection string' }),
+  ],
   providers: [CatsQueueController],
 })
 export class RootModule {}
@@ -84,27 +86,56 @@ export class CatsQueueController{
 }
 ```
 
-- **Sender:** Senders are initated during app startup and are stored in pool. Senders can be requested by injecting _ServiceBusSenderProvider_. It has a single method _getSender()_ which can return either Queue sender or MessageType sender. This can be injected to any class whose instantiation is taken care by Nestjs like controller, providers etc.
+- **Sender:** To inject senders, queue names and message types can be passed to ServiceBusModule forRoot method. It will initiate the senders and will be injected if requested.
 
   > MessageType sender automatically adds the messageType identifier hence no need to add it separately.
 
 ```
+import { Module } from '@nestjs/common';
+import { ServiceBusModule } from 'azure-service-bus-nestjs-wrapper';
+import { CatsQueueController } from './cats.queue-controller.ts';
+
+@Module({
+  imports: [
+    ServiceBusModule.forRoot({
+      connectionString: 'connection string',
+      queueSendersToBeInjected: ['cats.cat-adopted'],
+      messageTypeSendersToBeInjected: [
+        {
+          queueName: 'cats',
+          messageTypeNames: ['cat-adopted'],
+        },
+      ],
+    }),
+  ],
+  providers: [CatsQueueController],
+})
+export class RootModule {}
+```
+
+Senders can then be injected using decorators @InjectMessageTypeSender() and @InjectQueueSender().
+
+```
 import { Injectable } from "@nestjs/common";
-import { ServiceBusSenderProvider } from "azure-service-bus-nestjs-wrapper";
+import { ServiceBusSender } from '@azure/service-bus';
+import { InjectMessageTypeSender, InjectQueueSender, MessageTypeSender} from "azure-service-bus-nestjs-wrapper";
 
 @Injectable()
 export class CatsService{
 
-    constructor(private readonly serviceBusSenderProvider:ServiceBusSenderProvider){
+    constructor(
+       @InjectQueueSender('cats.cat-adopted') private readonly queueSenderCatAdopted: ServiceBusSender,
+       @InjectMessageTypeSender('cats','cat-adopted') private readonly messageTypeSenderCatAdopted: MessageTypeSender,
+    ){
 
     }
 
     adoptCat(){
         //Queue Sender
-        this.serviceBusSenderProvider.getSender('cats.cat-adopted').sendMessages({body:'Yay!'})
+        this.queueSenderCatAdopted.sendMessages({body:'Yay!'})
 
         //MessageType Sender
-        this.serviceBusSenderProvider.getSender('cats','cat-adopted').sendMessages({body:'Yay!'})
+        this.messageTypeSenderCatAdopted.sendMessages({body:'Yay!'})
     }
 }
 ```

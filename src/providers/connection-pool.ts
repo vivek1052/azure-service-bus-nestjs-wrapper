@@ -1,33 +1,53 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { MessageConnection } from '../libs/message.connection';
-import { QueueConnection } from '../libs/queue.connection';
+import { MessageReceiver } from '../libs/message.receiver';
+import { QueueReceiver } from '../libs/queue.receiver';
+import { MessageSender } from '../libs/message.sender';
+import { QueueSender } from '../libs/queue.sender';
 
 @Injectable()
 export class ConnectionPool {
-  private readonly connectionPool: Map<
-    string,
-    MessageConnection | QueueConnection
-  > = new Map();
+  private readonly receiverPool: Map<string, MessageReceiver | QueueReceiver> =
+    new Map();
 
-  addConnection(
-    queueName: string,
-    connection: MessageConnection | QueueConnection,
-  ) {
-    if (this.connectionPool.has(queueName)) {
+  private readonly senderPool: Map<string, QueueSender | MessageSender> =
+    new Map();
+
+  addReceiver(queueName: string, receiver: MessageReceiver | QueueReceiver) {
+    if (this.receiverPool.has(queueName)) {
       throw new InternalServerErrorException(
-        `${queueName} already exists in the connection pool`,
+        `${queueName} already exists in the receiver pool`,
       );
     }
 
-    this.connectionPool.set(queueName, connection);
+    this.receiverPool.set(queueName, receiver);
   }
 
-  getConnection(queueName: string): MessageConnection | QueueConnection {
-    if (!this.connectionPool.has(queueName)) {
+  getReceiver(queueName: string): MessageReceiver | QueueReceiver {
+    if (!this.receiverPool.has(queueName)) {
       throw new InternalServerErrorException(
-        `${queueName} doesn't exists in the connection pool`,
+        `${queueName} doesn't exists in the receiver pool`,
       );
     }
-    return this.connectionPool.get(queueName);
+    return this.receiverPool.get(queueName);
+  }
+
+  addSender(queueName: string, sender: QueueSender | MessageSender) {
+    if (this.senderPool.has(queueName)) {
+      throw new InternalServerErrorException(
+        `${queueName} already exists in sender pool`,
+      );
+    }
+
+    this.senderPool.set(queueName, sender);
+  }
+
+  getSender(queueName): QueueSender | MessageSender {
+    if (!this.senderPool.has(queueName)) {
+      throw new InternalServerErrorException(
+        `${queueName} doesn't exists in sender pool`,
+      );
+    }
+
+    return this.senderPool.get(queueName);
   }
 }
